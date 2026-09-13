@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+
+<title>Calculadora de Importación</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+    color: #17202a;
+}
+
+.container {
+    width: min(92%, 520px);
+    margin: auto;
+    padding: 25px 0;
+}
+
+h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+}
+
+.sub {
+    color: #667085;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.05);
+}
+
+h2 {
+    font-size: 19px;
+    margin: 0 0 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin: 14px 0 7px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #d0d5dd;
+    border-radius: 11px;
+    font-size: 16px;
+    background: white;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 110px;
+    gap: 9px;
+}
+
+.line {
+    display: flex;
+    justify-content: space-between;
+    padding: 11px 0;
+    border-bottom: 1px solid #eaecf0;
+}
+
+.line:last-child {
+    border-bottom: 0;
+}
+
+.total {
+    margin-top: 15px;
+    padding: 18px;
+    border-radius: 14px;
+    background: #111827;
+    color: white;
+}
+
+.total small {
+    opacity: 0.7;
+}
+
+.total strong {
+    display: block;
+    font-size: 27px;
+    margin-top: 5px;
+}
+
+.note {
+    font-size: 13px;
+    color: #667085;
+    line-height: 1.5;
+    margin: 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📦 Calculadora de Importación</h1>
+
+    <div class="sub">
+        China → Estados Unidos → Paraguay
+    </div>
+
+
+    <!-- DATOS -->
+
+    <div class="card">
+
+        <h2>Datos</h2>
+
+        <label>
+            Precio del producto (USD)
+        </label>
+
+        <input
+            id="product"
+            type="number"
+            min="0"
+            step="0.01"
+            value="25"
+        >
+
+
+        <label>
+            Peso
+        </label>
+
+        <div class="row">
+
+            <input
+                id="weight"
+                type="number"
+                min="0"
+                step="1"
+                value="300"
+            >
+
+            <select id="unit">
+
+                <option value="g">
+                    gramos
+                </option>
+
+                <option value="kg">
+                    kg
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <label>
+            Cotización del dólar (₲ por USD)
+        </label>
+
+        <input
+            id="dollar"
+            type="number"
+            min="0"
+            step="1"
+            value="7500"
+        >
+
+    </div>
+
+
+
+    <!-- ENVÍO -->
+
+    <div class="card">
+
+        <h2>🚚 Envío</h2>
+
+        <div class="line">
+
+            <span>
+                🇨🇳 Agente ($40/kg)
+            </span>
+
+            <b id="agent">
+                $0.00
+            </b>
+
+        </div>
+
+
+        <div class="line">
+
+            <span>
+                🇺🇸 Courier ($19,90/kg)
+            </span>
+
+            <b id="courier">
+                $0.00
+            </b>
+
+        </div>
+
+
+        <div class="line">
+
+            <span>
+                🚚 Envío total
+            </span>
+
+            <b id="shipping">
+                $0.00
+            </b>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- RESULTADO -->
+
+    <div class="card">
+
+        <h2>💰 Total</h2>
+
+
+        <div class="line">
+
+            <span>
+                Producto
+            </span>
+
+            <b id="productOut">
+                $0.00
+            </b>
+
+        </div>
+
+
+        <div class="line">
+
+            <span>
+                Envío
+            </span>
+
+            <b id="shippingOut">
+                $0.00
+            </b>
+
+        </div>
+
+
+        <div class="line">
+
+            <span>
+                Total USD
+            </span>
+
+            <b id="usd">
+                $0.00
+            </b>
+
+        </div>
+
+
+        <div class="total">
+
+            <small>
+                Total estimado en guaraníes
+            </small>
+
+            <strong id="pyg">
+                ₲ 0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- TARIFAS -->
+
+    <div class="card">
+
+        <h2>⚙️ Tarifas</h2>
+
+        <p class="note">
+
+            Agente chino:
+            <b>$40,00 por kg</b>.
+
+            <br>
+
+            Courier:
+            <b>$19,90 por kg</b>.
+
+            <br><br>
+
+            El cálculo es proporcional al peso,
+            sin peso mínimo.
+
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+const AGENT = 40;
+
+const COURIER = 19.90;
+
+
+const product =
+    document.getElementById("product");
+
+const weight =
+    document.getElementById("weight");
+
+const unit =
+    document.getElementById("unit");
+
+const dollar =
+    document.getElementById("dollar");
+
+
+
+function calcular() {
+
+    let peso =
+        Number(weight.value) || 0;
+
+    const precioProducto =
+        Number(product.value) || 0;
+
+    const cotizacion =
+        Number(dollar.value) || 0;
+
+
+    // Si está en gramos,
+    // convertir a kilogramos
+
+    if (unit.value === "g") {
+
+        peso = peso / 1000;
+
+    }
+
+
+    // Costo del agente chino
+
+    const costoAgente =
+        peso * AGENT;
+
+
+    // Costo del courier
+
+    const costoCourier =
+        peso * COURIER;
+
+
+    // Envío total
+
+    const envioTotal =
+        costoAgente + costoCourier;
+
+
+    // Producto + envío
+
+    const totalUSD =
+        precioProducto + envioTotal;
+
+
+    // Convertir a guaraníes
+
+    const totalPYG =
+        totalUSD * cotizacion;
+
+
+
+    // Mostrar resultados
+
+    document.getElementById("agent")
+        .textContent =
+        "$" + costoAgente.toFixed(2);
+
+
+    document.getElementById("courier")
+        .textContent =
+        "$" + costoCourier.toFixed(2);
+
+
+    document.getElementById("shipping")
+        .textContent =
+        "$" + envioTotal.toFixed(2);
+
+
+    document.getElementById("productOut")
+        .textContent =
+        "$" + precioProducto.toFixed(2);
+
+
+    document.getElementById("shippingOut")
+        .textContent =
+        "$" + envioTotal.toFixed(2);
+
+
+    document.getElementById("usd")
+        .textContent =
+        "$" + totalUSD.toFixed(2);
+
+
+    document.getElementById("pyg")
+        .textContent =
+        "₲ " +
+        Math.round(totalPYG)
+        .toLocaleString("es-PY");
+
+}
+
+
+
+// Actualizar automáticamente
+
+product.addEventListener(
+    "input",
+    calcular
+);
+
+weight.addEventListener(
+    "input",
+    calcular
+);
+
+unit.addEventListener(
+    "change",
+    calcular
+);
+
+dollar.addEventListener(
+    "input",
+    calcular
+);
+
+
+// Calcular al abrir
+
+calcular();
+
+</script>
+
+</body>
+</html>
